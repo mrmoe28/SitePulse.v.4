@@ -1,9 +1,5 @@
 {
-  "buildCommand": "cd .. && pnpm install --no-frozen-lockfile && turbo run build --filter=@pulsecrm/web --force",
-  "installCommand": "echo 'Skipping install - handled in buildCommand'",
-  "ignoreCommand": "cd .. && npx turbo-ignore",
   "framework": "nextjs",
-  "outputDirectory": ".next",
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
