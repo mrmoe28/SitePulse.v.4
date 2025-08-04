@@ -1,6 +1,8 @@
 # Dependencies
 node_modules/
 .pnpm-store/
+.pnpm/
+**/node_modules/.pnpm/
 
 # Build outputs (except the ones needed)
 .turbo/

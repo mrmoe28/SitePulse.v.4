@@ -4,7 +4,7 @@
   "private": true,
   "description": "Modern React-based CRM dashboard for crew management with intelligent interfaces and advanced collaboration tools",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   },
   "workspaces": [
     "apps/*",

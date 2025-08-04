@@ -1,4 +1,7 @@
 {
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "framework": "nextjs",
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
@@ -25,7 +28,9 @@
   ],
   "env": {
     "TURBO_REMOTE_ONLY": "false",
-    "TURBO_RUN_SUMMARY": "false"
+    "TURBO_RUN_SUMMARY": "false",
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "NEXT_TELEMETRY_DISABLED": "1"
   },
   "github": {
     "silent": true
