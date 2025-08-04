@@ -1,9 +1,4 @@
 {
-  "buildCommand": "pnpm install --no-frozen-lockfile && pnpm build",
-  "installCommand": "echo 'Skipping install - handled in buildCommand'",
-  "ignoreCommand": "npx turbo-ignore",
-  "framework": "nextjs",
-  "outputDirectory": ".next",
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
