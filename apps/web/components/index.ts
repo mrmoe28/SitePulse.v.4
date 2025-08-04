@@ -11,7 +11,7 @@ export { default as FileUpload } from './FileUpload';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ContractTemplateEditor } from './ContractTemplateEditor';
 
-// Toast component and hook
+// Toast hook (no default export available)
 export { useToast } from './Toast';
 
 // Form components
