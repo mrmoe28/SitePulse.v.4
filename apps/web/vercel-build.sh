@@ -47,7 +47,7 @@ if [ "$PNPM_AVAILABLE" = true ]; then
             npm install --package-lock-only
         fi
         
-        if npm install; then
+        if npm install --legacy-peer-deps; then
             echo "✅ npm install successful"
             BUILD_TOOL="npm"
         else
@@ -57,7 +57,7 @@ if [ "$PNPM_AVAILABLE" = true ]; then
     fi
 else
     echo "🏗️ Installing with npm..."
-    if npm install; then
+    if npm install --legacy-peer-deps; then
         echo "✅ npm install successful"
         BUILD_TOOL="npm"
     else
