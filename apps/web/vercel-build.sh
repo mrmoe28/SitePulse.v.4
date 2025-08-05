@@ -47,8 +47,8 @@ if [ "$PNPM_AVAILABLE" = true ]; then
             npm install --package-lock-only
         fi
         
-        if npm ci; then
-            echo "✅ npm ci successful"
+        if npm install; then
+            echo "✅ npm install successful"
             BUILD_TOOL="npm"
         else
             echo "❌ Both pnpm and npm failed"
@@ -57,11 +57,11 @@ if [ "$PNPM_AVAILABLE" = true ]; then
     fi
 else
     echo "🏗️ Installing with npm..."
-    if npm ci; then
-        echo "✅ npm ci successful"
+    if npm install; then
+        echo "✅ npm install successful"
         BUILD_TOOL="npm"
     else
-        echo "❌ npm ci failed"
+        echo "❌ npm install failed"
         exit 1
     fi
 fi

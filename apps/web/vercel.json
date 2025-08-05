@@ -1,6 +1,6 @@
 {
   "buildCommand": "bash vercel-build.sh",
-  "installCommand": "pnpm install --frozen-lockfile || npm ci",
+  "installCommand": "pnpm install --frozen-lockfile || npm install",
   "framework": "nextjs",
   "outputDirectory": ".next",
   "functions": {
