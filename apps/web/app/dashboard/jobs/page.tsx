@@ -74,10 +74,17 @@ export default function JobsPage() {
         budget: '',
         description: ''
       });
+      alert('Job created successfully!');
     },
     onError: (error: any) => {
       console.error('Error creating job:', error);
-      alert('Failed to create job. Please try again.');
+      console.error('Error details:', {
+        message: error.message,
+        code: error.data?.code,
+        httpStatus: error.data?.httpStatus,
+        stack: error.data?.stack
+      });
+      alert(`Failed to create job: ${error.message || 'Unknown error'}`);
     },
   });
 
@@ -140,16 +147,24 @@ export default function JobsPage() {
       return;
     }
 
-    createJobMutation.mutate({
-      title: formData.title,
-      description: formData.description || '',
-      contactId: formData.contactId,
+    if (!formData.description?.trim()) {
+      alert('Please enter a job description');
+      return;
+    }
+
+    const jobData = {
+      title: formData.title.trim(),
+      description: formData.description?.trim() || 'No description provided',
+      contactId: formData.contactId || undefined,
       priority: formData.priority as JobPriority || 'medium',
       assignedTo: '', // TODO: Add assignee selection
       dueDate: formData.startDate ? new Date(formData.startDate).toISOString() : new Date().toISOString(),
-      budget: formData.budget,
-      status: formData.status,
-    });
+      budget: formData.budget || undefined,
+      status: formData.status || 'pending',
+    };
+
+    console.log('Creating job with data:', jobData);
+    createJobMutation.mutate(jobData);
   };
 
   const handleJobView = useCallback((jobId: string) => {

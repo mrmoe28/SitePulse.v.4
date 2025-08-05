@@ -4,13 +4,18 @@ import { z } from 'zod';
 import { integrationsRouter } from './routers/integrations.router';
 import { apiKeysRouter } from './routers/apiKeys.router';
 import { webhooksRouter } from './routers/webhooks.router';
+import { db, jobs as jobsTable, organizations as orgsTable, users as usersTable, generateId } from '../db/drizzle';
+import { eq, desc, and } from 'drizzle-orm';
+import { ensureTablesExist } from '../db/init';
 
 // Simple in-memory storage for now - will be replaced with real DB later
 // Cleared all existing user data
 const users = new Map<string, any>();
 const organizations = new Map<string, any>();
 const verificationTokens = new Map<string, any>();
-const jobs = new Map<string, any>();
+
+// Initialize database tables on startup
+ensureTablesExist().catch(console.error);
 
 // Import real email service
 
@@ -556,36 +561,41 @@ export const appRouter = t.router({
         .input(z.object({
             status: z.string().optional(),
             limit: z.number().optional(),
+            organizationId: z.string().optional(),
         }).optional())
         .query(async ({ input = {} }) => {
             try {
-                // Load jobs from localStorage if in browser and jobs Map is empty
-                if (typeof window !== 'undefined' && jobs.size === 0) {
-                    const storedJobs = localStorage.getItem('jobs');
-                    if (storedJobs) {
-                        const jobsArray = JSON.parse(storedJobs);
-                        jobsArray.forEach((job: any) => {
-                            jobs.set(job.id, job);
-                        });
-                    }
-                }
-
-                // Get all jobs from the Map
-                let jobsList = Array.from(jobs.values());
-
-                // Filter by status if provided
+                // Build query conditions
+                const conditions = [];
+                
                 if (input.status) {
-                    jobsList = jobsList.filter(job => job.status === input.status);
+                    conditions.push(eq(jobsTable.status, input.status));
                 }
+                
+                // TODO: Add organizationId filter for multi-tenancy
+                // if (input.organizationId) {
+                //     conditions.push(eq(jobsTable.organizationId, input.organizationId));
+                // }
 
-                // Sort by creation date (newest first)
-                jobsList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                // Query jobs from database
+                const query = db
+                    .select()
+                    .from(jobsTable)
+                    .orderBy(desc(jobsTable.createdAt));
+
+                // Apply conditions if any
+                if (conditions.length > 0) {
+                    query.where(and(...conditions));
+                }
 
                 // Apply limit if provided
                 if (input.limit) {
-                    jobsList = jobsList.slice(0, input.limit);
+                    query.limit(input.limit);
                 }
 
+                const jobsList = await query;
+                
+                console.log(`Found ${jobsList.length} jobs in database`);
                 return jobsList;
             } catch (error) {
                 console.error('Get jobs error:', error);
@@ -608,40 +618,61 @@ export const appRouter = t.router({
             contactId: z.string().optional(),
             budget: z.string().optional(),
             status: z.string().optional(),
+            organizationId: z.string().optional(), // Will be required for multi-tenancy
         }))
         .mutation(async ({ input }) => {
             try {
-                const jobId = randomBytes(16).toString('hex');
-                const job = {
+                const jobId = generateId();
+                
+                // For now, use a default organization if not provided
+                // In production, this should come from the authenticated user's context
+                let organizationId = input.organizationId;
+                
+                if (!organizationId) {
+                    // Check if we have any organization in the database
+                    const orgs = await db.select().from(orgsTable).limit(1);
+                    
+                    if (orgs.length === 0) {
+                        // Create a default organization
+                        const defaultOrgId = generateId();
+                        await db.insert(orgsTable).values({
+                            id: defaultOrgId,
+                            name: 'Default Organization',
+                            slug: 'default',
+                        });
+                        organizationId = defaultOrgId;
+                        console.log('Created default organization:', defaultOrgId);
+                    } else {
+                        organizationId = orgs[0].id;
+                    }
+                }
+
+                const newJob = {
                     id: jobId,
+                    organizationId: organizationId,
                     title: input.title,
                     description: input.description,
                     status: input.status || 'pending',
                     priority: input.priority,
-                    assignedTo: input.assignedTo || '',
-                    dueDate: new Date(input.dueDate),
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    companyId: input.companyId || '',
-                    contactId: input.contactId || '',
-                    budget: input.budget || '',
+                    assignedTo: input.assignedTo || null,
+                    dueDate: input.dueDate ? new Date(input.dueDate) : null,
+                    companyId: input.companyId || null,
+                    contactId: input.contactId || null,
+                    budget: input.budget || null,
+                    clientId: input.contactId || null, // Map contactId to clientId for schema compatibility
                 };
 
-                // Store the job
-                jobs.set(jobId, job);
+                // Insert into database
+                const [insertedJob] = await db.insert(jobsTable).values(newJob).returning();
 
-                // Also persist to localStorage if in browser
-                if (typeof window !== 'undefined') {
-                    const jobsArray = Array.from(jobs.values());
-                    localStorage.setItem('jobs', JSON.stringify(jobsArray));
-                }
-
-                return job;
+                console.log('Job created successfully in PostgreSQL:', insertedJob);
+                
+                return insertedJob;
             } catch (error) {
                 console.error('Create job error:', error);
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Failed to create job'
+                    message: 'Failed to create job: ' + (error instanceof Error ? error.message : 'Unknown error')
                 });
             }
         }),
