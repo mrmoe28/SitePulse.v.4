@@ -1,7 +1,7 @@
 {
-  "buildCommand": "cd .. && pnpm install --no-frozen-lockfile && turbo run build --filter=@pulsecrm/web --force",
-  "installCommand": "echo 'Skipping install - handled in buildCommand'",
-  "ignoreCommand": "cd .. && npx turbo-ignore",
+  "buildCommand": "bash vercel-build.sh",
+  "installCommand": "pnpm install --frozen-lockfile || npm ci",
+  "ignoreCommand": "npx turbo-ignore",
   "framework": "nextjs",
   "outputDirectory": ".next",
   "functions": {
@@ -32,6 +32,7 @@
     "TURBO_REMOTE_ONLY": "false",
     "TURBO_RUN_SUMMARY": "false",
     "NODE_OPTIONS": "--max-old-space-size=4096",
+    "NODE_ENV": "production",
     "NEXT_TELEMETRY_DISABLED": "1"
   },
   "github": {
