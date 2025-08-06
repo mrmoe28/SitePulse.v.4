@@ -75,16 +75,6 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dropdown-menu'],
   },
 
-  // Turbopack configuration (moved from experimental.turbo)
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
-
   // Headers for security
   async headers() {
     return [
