@@ -17,10 +17,16 @@ const nextConfig = {
 
   // Webpack configuration
   webpack: (config, { webpack, isServer }) => {
-    // Alias the optional native canvas dependency
+    // Configure path aliases for module resolution
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
+      '@': require('path').resolve(__dirname),
+      '@/components': require('path').resolve(__dirname, 'components'),
+      '@/lib': require('path').resolve(__dirname, 'lib'),
+      '@/app': require('path').resolve(__dirname, 'app'),
+      '@/types': require('path').resolve(__dirname, 'types'),
+      '@/utils': require('path').resolve(__dirname, 'lib/utils'),
       canvas: false,
     };
 

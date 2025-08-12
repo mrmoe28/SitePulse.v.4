@@ -1,7 +1,7 @@
 // Central export file for all components
 // This ensures consistent imports and helps with module resolution on case-sensitive filesystems
 
-// Core components
+// Core components - explicit exports for module resolution
 export { default as DocumentViewer } from './DocumentViewer';
 export { default as DocumentSigner } from './DocumentSigner';
 export { default as PDFViewer } from './PDFViewer';
@@ -11,8 +11,13 @@ export { default as FileUpload } from './FileUpload';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ContractTemplateEditor } from './ContractTemplateEditor';
 
-// Toast hook (no default export available)
-export { useToast } from './Toast';
+// Toast components and hooks
+export { useToast, type Toast } from './Toast';
+export { default as ToastModule } from './Toast';
+
+// Re-export specific components for direct access
+export { default as DocumentViewer } from './DocumentViewer';
+export { default as DocumentSigner } from './DocumentSigner';
 
 // Form components
 export { default as ContactForm } from './contact-form';
