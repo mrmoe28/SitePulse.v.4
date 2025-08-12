@@ -1,8 +1,7 @@
 {
-  "buildCommand": "bash vercel-build.sh",
-  "installCommand": "pnpm install --frozen-lockfile || npm install --legacy-peer-deps",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
   "framework": "nextjs",
-  "outputDirectory": ".next",
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
