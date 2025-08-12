@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { FileText, CheckCircle, AlertCircle, Download, X, Type, Upload, Move } from 'lucide-react';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
-import { useToast } from './Toast';
+import { useToast } from '@/components/Toast';
 
 interface DocumentSignerProps {
   document: {

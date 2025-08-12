@@ -81,3 +81,6 @@ export function useToast() {
 
   return { addToast, ToastContainer };
 }
+
+// Default export for compatibility
+export default { useToast };
