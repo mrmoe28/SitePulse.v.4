@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next .turbo",
     "postbuild": "echo 'Build completed successfully!'",
-    "vercel-build": "next build"
+    "vercel-build": "pnpm install && next build"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.10.0",
